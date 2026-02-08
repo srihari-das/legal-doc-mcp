@@ -1,0 +1,14 @@
+[project]
+name = "pdf-compliance-analyzer"
+version = "1.0.0"
+description = "Financial compliance PDF analysis MCP server with regulatory intelligence for 10-K, SOX 404, 8-K, and Invoice documents"
+requires-python = ">=3.10"
+dependencies = [
+    "dedalus-mcp>=0.6.0",
+    "PyMuPDF>=1.23.0",
+    "python-dotenv>=1.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

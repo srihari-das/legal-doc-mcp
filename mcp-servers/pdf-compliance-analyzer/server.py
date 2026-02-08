@@ -774,12 +774,21 @@ async def extract_comparative_periods(pdf_path: str) -> str:
 # REGISTER TOOLS & RUN SERVER
 # ============================================================================
 
-server.register_tool(find_regulatory_sections)
-server.register_tool(extract_financial_statements)
-server.register_tool(validate_financial_math)
-server.register_tool(check_required_signatures)
-server.register_tool(detect_compliance_red_flags)
-server.register_tool(extract_comparative_periods)
+server.collect(
+    find_regulatory_sections,
+    extract_financial_statements,
+    validate_financial_math,
+    check_required_signatures,
+    detect_compliance_red_flags,
+    extract_comparative_periods,
+)
+
+
+async def main():
+    await server.serve()
+
 
 if __name__ == "__main__":
-    server.run()
+    import asyncio
+
+    asyncio.run(main())
