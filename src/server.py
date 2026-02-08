@@ -11,6 +11,7 @@ Owner: Person 1
 from dedalus_mcp import MCPServer, tool, ToolError
 import pymupdf
 import json
+import base64
 from typing import List, Dict
 import re
 
@@ -126,6 +127,30 @@ def search_text_in_pdf(doc, search_terms: List[str]) -> Dict:
     return {"found": False, "page": None, "excerpt": None}
 
 
+def open_pdf(pdf_path: str):
+    """
+    Open a PDF from a filesystem path OR base64-encoded string.
+    Accepts:
+      - Regular file path: "/tmp/report.pdf"
+      - Data URI: "data:application/pdf;base64,JVBERi0x..."
+      - Raw base64: "JVBERi0x..."
+    """
+    # Strip data URI prefix if present
+    if pdf_path.startswith("data:"):
+        pdf_path = pdf_path.split(",", 1)[1]
+
+    # Try base64 decode — valid base64 PDFs start with "JVBER" (%PDF encoded)
+    if pdf_path.startswith("JVBER") or (not pdf_path.startswith("/") and len(pdf_path) > 500):
+        try:
+            pdf_bytes = base64.b64decode(pdf_path)
+            return pymupdf.open(stream=pdf_bytes, filetype="pdf")
+        except Exception:
+            pass  # Not valid base64, fall through to file path
+
+    # Default: treat as filesystem path
+    return pymupdf.open(pdf_path)
+
+
 # ============================================================================
 # TOOL 1: FIND REGULATORY SECTIONS
 # ============================================================================
@@ -138,7 +163,7 @@ def search_text_in_pdf(doc, search_terms: List[str]) -> Dict:
 async def find_regulatory_sections(pdf_path: str, doc_type: str) -> str:
     """Find required sections based on document type."""
     try:
-        doc = pymupdf.open(pdf_path)
+        doc = open_pdf(pdf_path)
     except Exception as e:
         raise ToolError(f"Failed to open PDF: {e}")
 
@@ -200,7 +225,7 @@ async def find_regulatory_sections(pdf_path: str, doc_type: str) -> str:
 async def extract_financial_statements(pdf_path: str) -> str:
     """Extract and classify financial statements."""
     try:
-        doc = pymupdf.open(pdf_path)
+        doc = open_pdf(pdf_path)
     except Exception as e:
         raise ToolError(f"Failed to open PDF: {e}")
 
@@ -301,7 +326,7 @@ async def extract_financial_statements(pdf_path: str) -> str:
 async def validate_financial_math(pdf_path: str) -> str:
     """Validate financial calculations."""
     try:
-        doc = pymupdf.open(pdf_path)
+        doc = open_pdf(pdf_path)
     except Exception as e:
         raise ToolError(f"Failed to open PDF: {e}")
 
@@ -464,7 +489,7 @@ async def check_required_signatures(
 ) -> str:
     """Check for required signatures."""
     try:
-        doc = pymupdf.open(pdf_path)
+        doc = open_pdf(pdf_path)
     except Exception as e:
         raise ToolError(f"Failed to open PDF: {e}")
 
@@ -583,7 +608,7 @@ async def check_required_signatures(
 async def detect_compliance_red_flags(pdf_path: str) -> str:
     """Detect compliance red flags."""
     try:
-        doc = pymupdf.open(pdf_path)
+        doc = open_pdf(pdf_path)
     except Exception as e:
         raise ToolError(f"Failed to open PDF: {e}")
 
@@ -672,7 +697,7 @@ async def detect_compliance_red_flags(pdf_path: str) -> str:
 async def extract_comparative_periods(pdf_path: str) -> str:
     """Extract multi-period financial data and calculate changes."""
     try:
-        doc = pymupdf.open(pdf_path)
+        doc = open_pdf(pdf_path)
     except Exception as e:
         raise ToolError(f"Failed to open PDF: {e}")
 
