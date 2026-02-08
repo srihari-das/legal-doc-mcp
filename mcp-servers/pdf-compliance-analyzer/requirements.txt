@@ -1,0 +1,5 @@
+# PDF Compliance Analyzer MCP Server - Dependencies
+
+dedalus-mcp>=0.1.0
+PyMuPDF>=1.23.0
+python-dotenv>=1.0.0
