@@ -18,6 +18,7 @@ server = MCPServer(
     name="pdf-compliance-analyzer",
     version="1.0.0",
     instructions="Financial compliance PDF analysis with regulatory intelligence",
+    streamable_http_stateless=True,
 )
 
 
@@ -785,7 +786,7 @@ server.collect(
 
 
 async def main():
-    await server.serve()
+    await server.serve(port=8080)
 
 
 if __name__ == "__main__":
