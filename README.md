@@ -88,13 +88,3 @@ Searches for known compliance warning phrases with severity levels: critical (go
 Extracts multi-period financial data, calculates period-over-period changes (absolute and percent), and flags material changes (>10% or >$100K).
 
 **Input:** `pdf_path` (string)
-
-## Integration Notes for Person 2
-
-This MCP server is standalone and optional. To integrate into Agent 2:
-
-1. Add to Dedalus `mcp_servers` list
-2. Include relevant tools in the agent's prompt
-3. Agent 2 can use tool outputs for compliance reasoning
-
-No changes required to existing Agent 2 code to test this server independently.
